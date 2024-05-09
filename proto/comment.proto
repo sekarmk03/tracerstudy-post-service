@@ -1,0 +1,53 @@
+syntax = "proto3";
+
+package tracer_study_grpc;
+option go_package = "./;pb";
+
+import "google/protobuf/timestamp.proto";
+import "google/protobuf/empty.proto";
+
+message Comment {
+    uint64 id = 1;
+    uint64 post_id = 2;
+    uint64 comment_id = 3;
+    string name = 4;
+    string content = 5;
+    uint32 level = 6;
+    google.protobuf.Timestamp created_at = 7;
+    google.protobuf.Timestamp updated_at = 8;
+    google.protobuf.Timestamp deleted_at = 9;
+}
+
+message GetAllCommentsResponse {
+    uint32 code = 1;
+    string message = 2;
+    repeated Comment data = 3;
+}
+
+message GetCommentByIdRequest {
+    uint64 id = 1;
+}
+
+message GetCommentsByPostIdRequest {
+    uint64 postId = 1;
+}
+
+message GetCommentResponse {
+    uint32 code = 1;
+    string message = 2;
+    Comment data = 3;
+}
+
+message DeleteCommentResponse {
+    uint32 code = 1;
+    string message = 2;
+}
+
+service CommentService {
+    rpc GetAllComments(google.protobuf.Empty) returns (GetAllCommentsResponse) {};
+    rpc GetCommentsByPostId(GetCommentsByPostIdRequest) returns (GetAllCommentsResponse) {};
+    rpc GetCommentById(GetCommentByIdRequest) returns (GetCommentResponse) {};
+    rpc CreateComment(Comment) returns (GetCommentResponse) {};
+    rpc ReplyComment(Comment) returns (GetCommentResponse) {};
+    rpc DeleteComment(GetCommentByIdRequest) returns (DeleteCommentResponse) {};
+}
