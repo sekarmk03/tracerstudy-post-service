@@ -1,6 +1,8 @@
 package config
 
 import (
+	"time"
+
 	"github.com/joeshaw/envdecode"
 	"github.com/joho/godotenv"
 	"github.com/pkg/errors"
@@ -11,6 +13,7 @@ type Config struct {
 	Port        Port
 	MySQL       MySQL
 	StoragePath string `env:"STORAGE_PATH,default=./uploads/"`
+	JWT       JWTConfig
 }
 
 type Port struct {
@@ -24,6 +27,11 @@ type MySQL struct {
 	User     string `env:"MYSQL_USER,default=root"`
 	Password string `env:"MYSQL_PASSWORD,default=skrmk372"`
 	Name     string `env:"MYSQL_NAME,default=new_tracer"`
+}
+
+type JWTConfig struct {
+	JwtSecretKey  string        `env:"JWT_SECRET_KEY"`
+	TokenDuration time.Duration `env:"JWT_DURATION,default=30m"`
 }
 
 func NewConfig(env string) (*Config, error) {

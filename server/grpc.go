@@ -9,9 +9,9 @@ import (
 	"syscall"
 	"time"
 
-	// commonJwt "tracerstudy-tracer-service/common/jwt"
-	// roles "tracerstudy-tracer-service/common/authorization"
-	// "tracerstudy-tracer-service/server/interceptor"
+	roles "tracerstudy-post-service/common/authorization"
+	commonJwt "tracerstudy-post-service/common/jwt"
+	"tracerstudy-post-service/server/interceptor"
 
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/codes"
@@ -45,16 +45,16 @@ func NewGrpc(port string, options ...grpc.ServerOption) *Grpc {
 
 func NewGrpcServer(
 	port string,
-	// jwtManager *commonJwt.JWT,
+	jwtManager *commonJwt.JWT,
 ) *Grpc {
 	// var options grpc.ServerOption
 	// options := grpc_middleware.WithUnaryServerChain()
 	// add option unary interceptor
 	// jwtManager := commonJwt.NewJWT(secretKey, tokenDuration)
 	// authInterceptor := interceptor.NewAuthInterceptor(jwtManager, accessibleRoles())
-	// authInterceptor := interceptor.NewAuthInterceptor(jwtManager, roles.GetAccessibleRoles())
+	authInterceptor := interceptor.NewAuthInterceptor(jwtManager, roles.GetAccessibleRoles())
 	options := []grpc.ServerOption{
-		// grpc.UnaryInterceptor(authInterceptor.Unary()),
+		grpc.UnaryInterceptor(authInterceptor.Unary()),
 	}
 	server := NewGrpc(port, options...)
 	return server
@@ -86,25 +86,3 @@ func (g *Grpc) AwaitTermination() error {
 	g.Server.GracefulStop()
 	return g.listener.Close()
 }
-
-// func defaultUnaryServerInterceptor() []grpc.UnaryServerInterceptor {
-// 	jwtManager := commonJwt.NewJWT(secretKey, tokenDuration)
-// 	authInterceptor := interceptor.NewAuthInterceptor(jwtManager, accessibleRoles())
-
-// 	options := []grpc.ServerOption{
-// 		grpc.UnaryInterceptor(authInterceptor.Unary()),
-// 	}
-
-// 	return options
-// }
-
-// func accessibleRoles() map[string][]uint32 {
-// 	const prodiService = "/tracer_study_grpc.ProdiService/"
-// 	// 1 = admin
-// 	// 2 = user
-// 	return map[string][]uint32{
-// 		prodiService + "GetAllProdi": {1, 2},
-// 		prodiService + "GetProdiByKodeprodi": {1, 2},
-// 		prodiService + "CreateProdi": {1},
-// 	}
-// }
