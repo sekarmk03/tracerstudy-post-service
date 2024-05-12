@@ -10,6 +10,7 @@ import (
 	"tracerstudy-post-service/modules/post/service"
 	"tracerstudy-post-service/pb"
 
+	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/status"
 	"google.golang.org/protobuf/types/known/emptypb"
 )
@@ -34,7 +35,11 @@ func (ph *PostHandler) GetAllPosts(ctx context.Context, req *emptypb.Empty) (*pb
 	if err != nil {
 		parseError := errors.ParseError(err)
 		log.Println("ERROR: [PostHandler - GetAllPost] Error while get all post: ", parseError.Message)
-		return nil, status.Errorf(parseError.Code, parseError.Message)
+		// return nil, status.Errorf(parseError.Code, parseError.Message)
+		return &pb.GetAllPostsResponse{
+			Code:    uint32(http.StatusInternalServerError),
+			Message: parseError.Message,
+		}, status.Errorf(parseError.Code, parseError.Message)
 	}
 
 	var postArr []*pb.Post
@@ -55,14 +60,23 @@ func (ph *PostHandler) GetPostById(ctx context.Context, req *pb.GetPostByIdReque
 	if err != nil {
 		if post == nil {
 			log.Println("WARNING: [PostHandler - GetPostById] Resource post not found for id:", req.GetId())
-			return nil, status.Errorf(status.Code(err), "post not found")
+			// return nil, status.Errorf(codes.NotFound, "post not found")
+			return &pb.GetPostResponse{
+				Code:    uint32(http.StatusNotFound),
+				Message: "post not found",
+			}, status.Errorf(codes.NotFound, "post not found")
 		}
 		parseError := errors.ParseError(err)
 		log.Println("ERROR: [PostHandler - GetPostById] Internal server error:", parseError.Message)
-		return nil, status.Errorf(parseError.Code, parseError.Message)
+		// return nil, status.Errorf(parseError.Code, parseError.Message)
+		return &pb.GetPostResponse{
+			Code:    uint32(http.StatusInternalServerError),
+			Message: parseError.Message,
+		}, status.Errorf(parseError.Code, parseError.Message)
 	}
 
 	postProto := entity.ConvertEntityToProto(post)
+
 	return &pb.GetPostResponse{
 		Code:    uint32(http.StatusOK),
 		Message: "get post success",
@@ -75,17 +89,26 @@ func (ph *PostHandler) CreatePost(ctx context.Context, req *pb.CreatePostRequest
 	if err != nil {
 		parseError := errors.ParseError(err)
 		log.Println("ERROR: [PostHandler - CreatePost] Error while upload image: ", parseError.Message)
-		return nil, status.Errorf(parseError.Code, parseError.Message)
+		// return nil, status.Errorf(parseError.Code, parseError.Message)
+		return &pb.GetPostResponse{
+			Code:    uint32(http.StatusInternalServerError),
+			Message: parseError.Message,
+		}, status.Errorf(parseError.Code, parseError.Message)
 	}
 
 	post, err := ph.postSvc.Create(ctx, req.GetTitle(), req.GetContent(), image, req.GetImageCaption(), req.GetType(), req.GetIsFeatured(), req.GetCreatedBy(), req.GetTags())
 	if err != nil {
 		parseError := errors.ParseError(err)
 		log.Println("ERROR: [PostHandler - CreatePost] Error while create post: ", parseError.Message)
-		return nil, status.Errorf(parseError.Code, parseError.Message)
+		// return nil, status.Errorf(parseError.Code, parseError.Message)
+		return &pb.GetPostResponse{
+			Code:    uint32(http.StatusInternalServerError),
+			Message: parseError.Message,
+		}, status.Errorf(parseError.Code, parseError.Message)
 	}
 
 	postProto := entity.ConvertEntityToProto(post)
+
 	return &pb.GetPostResponse{
 		Code:    uint32(http.StatusOK),
 		Message: "create post success",
@@ -98,25 +121,41 @@ func (ph *PostHandler) UpdatePost(ctx context.Context, req *pb.CreatePostRequest
 	if err != nil {
 		if post == nil {
 			log.Println("WARNING: [PostHandler - GetPostById] Resource post not found for id:", req.GetId())
-			return nil, status.Errorf(status.Code(err), "post not found")
+			// return nil, status.Errorf(codes.NotFound, "post not found")
+			return &pb.GetPostResponse{
+				Code:    uint32(http.StatusNotFound),
+				Message: "post not found",
+			}, status.Errorf(codes.NotFound, "post not found")
 		}
 		parseError := errors.ParseError(err)
 		log.Println("ERROR: [PostHandler - GetPostById] Internal server error:", parseError.Message)
-		return nil, status.Errorf(parseError.Code, parseError.Message)
+		// return nil, status.Errorf(parseError.Code, parseError.Message)
+		return &pb.GetPostResponse{
+			Code:    uint32(http.StatusInternalServerError),
+			Message: parseError.Message,
+		}, status.Errorf(parseError.Code, parseError.Message)
 	}
 
 	image, err := ph.imageSvc.UploadImage(ctx, req.GetImageFilename(), req.GetImageBuffer())
 	if err != nil {
 		parseError := errors.ParseError(err)
 		log.Println("ERROR: [PostHandler - UpdatePost] Error while upload image: ", parseError.Message)
-		return nil, status.Errorf(parseError.Code, parseError.Message)
+		// return nil, status.Errorf(parseError.Code, parseError.Message)
+		return &pb.GetPostResponse{
+			Code:    uint32(http.StatusInternalServerError),
+			Message: parseError.Message,
+		}, status.Errorf(parseError.Code, parseError.Message)
 	}
 
 	err = ph.imageSvc.DeleteImage(ctx, post.MainImage)
 	if err != nil {
 		parseError := errors.ParseError(err)
 		log.Println("ERROR: [PostHandler - UpdatePost] Error while delete image: ", parseError.Message)
-		return nil, status.Errorf(parseError.Code, parseError.Message)
+		// return nil, status.Errorf(parseError.Code, parseError.Message)
+		return &pb.GetPostResponse{
+			Code:    uint32(http.StatusInternalServerError),
+			Message: parseError.Message,
+		}, status.Errorf(parseError.Code, parseError.Message)
 	}
 
 	postDataUpdate := &entity.Post{
@@ -135,10 +174,15 @@ func (ph *PostHandler) UpdatePost(ctx context.Context, req *pb.CreatePostRequest
 	if err != nil {
 		parseError := errors.ParseError(err)
 		log.Println("ERROR: [PostHandler - UpdatePost] Error while update post: ", parseError.Message)
-		return nil, status.Errorf(parseError.Code, parseError.Message)
+		// return nil, status.Errorf(parseError.Code, parseError.Message)
+		return &pb.GetPostResponse{
+			Code:    uint32(http.StatusInternalServerError),
+			Message: parseError.Message,
+		}, status.Errorf(parseError.Code, parseError.Message)
 	}
 
 	postProto := entity.ConvertEntityToProto(post)
+
 	return &pb.GetPostResponse{
 		Code:    uint32(http.StatusOK),
 		Message: "update post success",
@@ -151,25 +195,41 @@ func (ph *PostHandler) DeletePost(ctx context.Context, req *pb.GetPostByIdReques
 	if err != nil {
 		if post == nil {
 			log.Println("WARNING: [PostHandler - GetPostById] Resource post not found for id:", req.GetId())
-			return nil, status.Errorf(status.Code(err), "post not found")
+			// return nil, status.Errorf(codes.NotFound, "post not found")
+			return &pb.DeletePostResponse{
+				Code:    uint32(http.StatusNotFound),
+				Message: "post not found",
+			}, status.Errorf(codes.NotFound, "post not found")
 		}
 		parseError := errors.ParseError(err)
 		log.Println("ERROR: [PostHandler - GetPostById] Internal server error:", parseError.Message)
-		return nil, status.Errorf(parseError.Code, parseError.Message)
+		// return nil, status.Errorf(parseError.Code, parseError.Message)
+		return &pb.DeletePostResponse{
+			Code:    uint32(http.StatusInternalServerError),
+			Message: parseError.Message,
+		}, status.Errorf(parseError.Code, parseError.Message)
 	}
 
 	err = ph.imageSvc.DeleteImage(ctx, post.MainImage)
 	if err != nil {
 		parseError := errors.ParseError(err)
 		log.Println("ERROR: [PostHandler - DeletePost] Error while delete image: ", parseError.Message)
-		return nil, status.Errorf(parseError.Code, parseError.Message)
+		// return nil, status.Errorf(parseError.Code, parseError.Message)
+		return &pb.DeletePostResponse{
+			Code:    uint32(http.StatusInternalServerError),
+			Message: parseError.Message,
+		}, status.Errorf(parseError.Code, parseError.Message)
 	}
 
 	err = ph.postSvc.Delete(ctx, req.GetId())
 	if err != nil {
 		parseError := errors.ParseError(err)
 		log.Println("ERROR: [PostHandler - DeletePost] Error while delete post: ", parseError.Message)
-		return nil, status.Errorf(parseError.Code, parseError.Message)
+		// return nil, status.Errorf(parseError.Code, parseError.Message)
+		return &pb.DeletePostResponse{
+			Code:    uint32(http.StatusInternalServerError),
+			Message: parseError.Message,
+		}, status.Errorf(parseError.Code, parseError.Message)
 	}
 
 	return &pb.DeletePostResponse{
@@ -183,10 +243,15 @@ func (ph *PostHandler) AddVisitor(ctx context.Context, req *pb.GetPostByIdReques
 	if err != nil {
 		parseError := errors.ParseError(err)
 		log.Println("ERROR: [PostHandler - AddVisitor] Error while increment visitor: ", parseError.Message)
-		return nil, status.Errorf(parseError.Code, parseError.Message)
+		// return nil, status.Errorf(parseError.Code, parseError.Message)
+		return &pb.GetPostResponse{
+			Code:    uint32(http.StatusInternalServerError),
+			Message: parseError.Message,
+		}, status.Errorf(parseError.Code, parseError.Message)
 	}
 
 	postProto := entity.ConvertEntityToProto(post)
+
 	return &pb.GetPostResponse{
 		Code:    uint32(http.StatusOK),
 		Message: "increment visitor success",
