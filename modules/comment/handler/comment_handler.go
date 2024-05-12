@@ -10,6 +10,8 @@ import (
 	"tracerstudy-post-service/modules/comment/service"
 	"tracerstudy-post-service/pb"
 
+	"google.golang.org/grpc/codes"
+	"google.golang.org/grpc/status"
 	"google.golang.org/protobuf/types/known/emptypb"
 )
 
@@ -31,7 +33,11 @@ func (ch *CommentHandler) GetAllComments(ctx context.Context, req *emptypb.Empty
 	if err != nil {
 		parseError := errors.ParseError(err)
 		log.Println("ERROR: [CommentHandler - GetAllComments] Error while get all comments:", parseError.Message)
-		return nil, err
+		// return nil, status.Errorf(parseError.Code, parseError.Message)
+		return &pb.GetAllCommentsResponse{
+			Code:    uint32(http.StatusInternalServerError),
+			Message: parseError.Message,
+		}, status.Errorf(parseError.Code, parseError.Message)
 	}
 
 	var commentArr []*pb.Comment
@@ -52,7 +58,11 @@ func (ch *CommentHandler) GetCommentsByPostId(ctx context.Context, req *pb.GetCo
 	if err != nil {
 		parseError := errors.ParseError(err)
 		log.Println("ERROR: [CommentHandler - GetCommentsByPostId] Error while get comments by post id:", parseError.Message)
-		return nil, err
+		// return nil, status.Errorf(parseError.Code, parseError.Message)
+		return &pb.GetAllCommentsResponse{
+			Code:    uint32(http.StatusInternalServerError),
+			Message: parseError.Message,
+		}, status.Errorf(parseError.Code, parseError.Message)
 	}
 
 	var commentArr []*pb.Comment
@@ -73,14 +83,23 @@ func (ch *CommentHandler) GetCommentById(ctx context.Context, req *pb.GetComment
 	if err != nil {
 		if comment == nil {
 			log.Println("WARNING: [CommentHandler - GetCommentById] Resource comment not found for id:", req.GetId())
-			return nil, err
+			// return nil, status.Errorf(codes.NotFound, "comment not found")
+			return &pb.GetCommentResponse{
+				Code:    uint32(http.StatusNotFound),
+				Message: "comment not found",
+			}, status.Errorf(codes.NotFound, "responden not found")
 		}
 		parseError := errors.ParseError(err)
 		log.Println("ERROR: [CommentHandler - GetCommentById] Internal server error:", parseError.Message)
-		return nil, err
+		// return nil, status.Errorf(parseError.Code, parseError.Message)
+		return &pb.GetCommentResponse{
+			Code:    uint32(http.StatusInternalServerError),
+			Message: parseError.Message,
+		}, status.Errorf(parseError.Code, parseError.Message)
 	}
 
 	commentProto := entity.ConvertEntityToProto(comment)
+
 	return &pb.GetCommentResponse{
 		Code:    uint32(http.StatusOK),
 		Message: "get comment success",
@@ -93,10 +112,15 @@ func (ch *CommentHandler) CreateComment(ctx context.Context, req *pb.Comment) (*
 	if err != nil {
 		parseError := errors.ParseError(err)
 		log.Println("ERROR: [CommentHandler - CreateComment] Error while create comment:", parseError.Message)
-		return nil, err
+		// return nil, status.Errorf(parseError.Code, parseError.Message)
+		return &pb.GetCommentResponse{
+			Code:    uint32(http.StatusInternalServerError),
+			Message: parseError.Message,
+		}, status.Errorf(parseError.Code, parseError.Message)
 	}
 
 	commentProto := entity.ConvertEntityToProto(comment)
+
 	return &pb.GetCommentResponse{
 		Code:    uint32(http.StatusCreated),
 		Message: "create comment success",
@@ -109,10 +133,15 @@ func (ch *CommentHandler) ReplyComment(ctx context.Context, req *pb.Comment) (*p
 	if err != nil {
 		parseError := errors.ParseError(err)
 		log.Println("ERROR: [CommentHandler - ReplyComment] Error while reply comment:", parseError.Message)
-		return nil, err
+		// return nil, status.Errorf(parseError.Code, parseError.Message)
+		return &pb.GetCommentResponse{
+			Code:    uint32(http.StatusInternalServerError),
+			Message: parseError.Message,
+		}, status.Errorf(parseError.Code, parseError.Message)
 	}
 
 	commentProto := entity.ConvertEntityToProto(comment)
+
 	return &pb.GetCommentResponse{
 		Code:    uint32(http.StatusCreated),
 		Message: "reply comment success",
@@ -125,7 +154,11 @@ func (ch *CommentHandler) DeleteComment(ctx context.Context, req *pb.GetCommentB
 	if err != nil {
 		parseError := errors.ParseError(err)
 		log.Println("ERROR: [CommentHandler - DeleteComment] Error while delete comment:", parseError.Message)
-		return nil, err
+		// return nil, status.Errorf(parseError.Code, parseError.Message)
+		return &pb.DeleteCommentResponse{
+			Code:    uint32(http.StatusInternalServerError),
+			Message: parseError.Message,
+		}, status.Errorf(parseError.Code, parseError.Message)
 	}
 
 	return &pb.DeleteCommentResponse{
