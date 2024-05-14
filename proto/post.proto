@@ -11,8 +11,8 @@ message Post {
     string title = 2;
     string slug = 3;
     string content = 4;
-    string main_image = 5;
-    string caption_image = 6;
+    string image_path = 5;
+    string image_caption = 6;
     string type = 7;
     uint32 is_featured = 8;
     uint64 visitors = 9;

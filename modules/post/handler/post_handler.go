@@ -147,7 +147,7 @@ func (ph *PostHandler) UpdatePost(ctx context.Context, req *pb.CreatePostRequest
 		}, status.Errorf(parseError.Code, parseError.Message)
 	}
 
-	err = ph.imageSvc.DeleteImage(ctx, post.MainImage)
+	err = ph.imageSvc.DeleteImage(ctx, post.ImagePath)
 	if err != nil {
 		parseError := errors.ParseError(err)
 		log.Println("ERROR: [PostHandler - UpdatePost] Error while delete image: ", parseError.Message)
@@ -161,8 +161,8 @@ func (ph *PostHandler) UpdatePost(ctx context.Context, req *pb.CreatePostRequest
 	postDataUpdate := &entity.Post{
 		Title:        req.GetTitle(),
 		Content:      req.GetContent(),
-		MainImage:    image,
-		CaptionImage: req.GetImageCaption(),
+		ImagePath:    image,
+		ImageCaption: req.GetImageCaption(),
 		Type:         req.GetType(),
 		IsFeatured:   req.GetIsFeatured(),
 		CreatedBy:    req.GetCreatedBy(),
@@ -210,7 +210,7 @@ func (ph *PostHandler) DeletePost(ctx context.Context, req *pb.GetPostByIdReques
 		}, status.Errorf(parseError.Code, parseError.Message)
 	}
 
-	err = ph.imageSvc.DeleteImage(ctx, post.MainImage)
+	err = ph.imageSvc.DeleteImage(ctx, post.ImagePath)
 	if err != nil {
 		parseError := errors.ParseError(err)
 		log.Println("ERROR: [PostHandler - DeletePost] Error while delete image: ", parseError.Message)

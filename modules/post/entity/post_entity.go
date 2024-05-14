@@ -17,8 +17,8 @@ type Post struct {
 	Title        string         `json:"title"`
 	Slug         string         `json:"slug"`
 	Content      string         `json:"content"`
-	MainImage    string         `json:"main_image"`
-	CaptionImage string         `json:"caption_image"`
+	ImagePath    string         `json:"image_path"`
+	ImageCaption string         `json:"image_caption"`
 	Type         string         `json:"type"`
 	IsFeatured   uint32         `json:"is_featured"`
 	Visitors     uint64         `json:"visitors"`
@@ -40,8 +40,8 @@ func ConvertEntityToProto(p *Post) *pb.Post {
 		Title:        p.Title,
 		Slug:         p.Slug,
 		Content:      p.Content,
-		MainImage:    p.MainImage,
-		CaptionImage: p.CaptionImage,
+		ImagePath:    p.ImagePath,
+		ImageCaption: p.ImageCaption,
 		Type:         p.Type,
 		IsFeatured:   p.IsFeatured,
 		Visitors:     p.Visitors,
@@ -59,8 +59,8 @@ func ConvertProtoToEntity(p *pb.Post) *Post {
 		Title:        p.Title,
 		Slug:         p.Slug,
 		Content:      p.Content,
-		MainImage:    p.MainImage,
-		CaptionImage: p.CaptionImage,
+		ImagePath:    p.ImagePath,
+		ImageCaption: p.ImageCaption,
 		Type:         p.Type,
 		IsFeatured:   p.IsFeatured,
 		Visitors:     p.Visitors,
