@@ -96,8 +96,8 @@ func (svc *PostService) Update(ctx context.Context, id uint64, fields *entity.Po
 		utils.AddItemToMap(updatedMap, "slug", utils.GenerateSlug(fields.Title))
 	}
 	utils.AddItemToMap(updatedMap, "content", fields.Content)
-	utils.AddItemToMap(updatedMap, "main_image", fields.ImagePath)
-	utils.AddItemToMap(updatedMap, "caption_image", fields.ImageCaption)
+	utils.AddItemToMap(updatedMap, "image_path", fields.ImagePath)
+	utils.AddItemToMap(updatedMap, "image_caption", fields.ImageCaption)
 	utils.AddItemToMap(updatedMap, "type", fields.Type)
 	utils.AddItemToMap(updatedMap, "is_featured", fields.IsFeatured)
 	utils.AddItemToMap(updatedMap, "updated_by", fields.UpdatedBy)

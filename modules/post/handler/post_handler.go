@@ -6,6 +6,8 @@ import (
 	"net/http"
 	"tracerstudy-post-service/common/config"
 	"tracerstudy-post-service/common/errors"
+	"tracerstudy-post-service/common/utils"
+	"tracerstudy-post-service/modules/post/client"
 	"tracerstudy-post-service/modules/post/entity"
 	"tracerstudy-post-service/modules/post/service"
 	"tracerstudy-post-service/pb"
@@ -20,13 +22,15 @@ type PostHandler struct {
 	config   config.Config
 	postSvc  service.PostServiceUseCase
 	imageSvc service.ImageServiceUseCase
+	authSvc client.AuthServiceClient
 }
 
-func NewPostHandler(config config.Config, postService service.PostServiceUseCase, imageService service.ImageServiceUseCase) *PostHandler {
+func NewPostHandler(config config.Config, postService service.PostServiceUseCase, imageService service.ImageServiceUseCase, authService client.AuthServiceClient) *PostHandler {
 	return &PostHandler{
 		config:   config,
 		postSvc:  postService,
 		imageSvc: imageService,
+		authSvc: authService,
 	}
 }
 
@@ -96,7 +100,39 @@ func (ph *PostHandler) CreatePost(ctx context.Context, req *pb.CreatePostRequest
 		}, status.Errorf(parseError.Code, parseError.Message)
 	}
 
-	post, err := ph.postSvc.Create(ctx, req.GetTitle(), req.GetContent(), image, req.GetImageCaption(), req.GetType(), req.GetIsFeatured(), req.GetCreatedBy(), req.GetTags())
+	accessToken, err := utils.GetMetadataAuthorization(ctx)
+	if err != nil {
+		log.Println("ERROR: [PostHandler - CreatePost] Error while getting metadata authorization:", err)
+		parseError := errors.ParseError(err)
+		log.Println("ERROR: [PostHandler - CreatePost] Error while get metadata authorization:", parseError.Message)
+		return &pb.GetPostResponse{
+			Code:    uint32(http.StatusInternalServerError),
+			Message: parseError.Message,
+		}, status.Errorf(parseError.Code, parseError.Message)
+	}
+
+	currentUser, err := ph.authSvc.GetCurrentUser(ctx, &emptypb.Empty{}, accessToken)
+	if err != nil {
+		parseError := errors.ParseError(err)
+		log.Println("ERROR: [PostHandler - CreatePost] Error while get current user: ", parseError.Message)
+		// return nil, status.Errorf(parseError.Code, parseError.Message)
+		return &pb.GetPostResponse{
+			Code:    uint32(http.StatusInternalServerError),
+			Message: parseError.Message,
+		}, status.Errorf(parseError.Code, parseError.Message)
+	}
+
+	post, err := ph.postSvc.Create(
+		ctx,
+		req.GetTitle(),
+		req.GetContent(),
+		image,
+		req.GetImageCaption(),
+		req.GetType(),
+		req.GetIsFeatured(),
+		currentUser.GetData().Username,
+		req.GetTags(),
+	)
 	if err != nil {
 		parseError := errors.ParseError(err)
 		log.Println("ERROR: [PostHandler - CreatePost] Error while create post: ", parseError.Message)
@@ -158,6 +194,28 @@ func (ph *PostHandler) UpdatePost(ctx context.Context, req *pb.CreatePostRequest
 		}, status.Errorf(parseError.Code, parseError.Message)
 	}
 
+	accessToken, err := utils.GetMetadataAuthorization(ctx)
+	if err != nil {
+		log.Println("ERROR: [PostHandler - CreatePost] Error while getting metadata authorization:", err)
+		parseError := errors.ParseError(err)
+		log.Println("ERROR: [PostHandler - CreatePost] Error while get metadata authorization:", parseError.Message)
+		return &pb.GetPostResponse{
+			Code:    uint32(http.StatusInternalServerError),
+			Message: parseError.Message,
+		}, status.Errorf(parseError.Code, parseError.Message)
+	}
+
+	currentUser, err := ph.authSvc.GetCurrentUser(ctx, &emptypb.Empty{}, accessToken)
+	if err != nil {
+		parseError := errors.ParseError(err)
+		log.Println("ERROR: [PostHandler - UpdatePost] Error while get current user: ", parseError.Message)
+		// return nil, status.Errorf(parseError.Code, parseError.Message)
+		return &pb.GetPostResponse{
+			Code:    uint32(http.StatusInternalServerError),
+			Message: parseError.Message,
+		}, status.Errorf(parseError.Code, parseError.Message)
+	}
+
 	postDataUpdate := &entity.Post{
 		Title:        req.GetTitle(),
 		Content:      req.GetContent(),
@@ -165,8 +223,7 @@ func (ph *PostHandler) UpdatePost(ctx context.Context, req *pb.CreatePostRequest
 		ImageCaption: req.GetImageCaption(),
 		Type:         req.GetType(),
 		IsFeatured:   req.GetIsFeatured(),
-		CreatedBy:    req.GetCreatedBy(),
-		UpdatedBy:    req.GetUpdatedBy(),
+		UpdatedBy:    currentUser.GetData().Username,
 		Tags:         req.GetTags(),
 	}
 

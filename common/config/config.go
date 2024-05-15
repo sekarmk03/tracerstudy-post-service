@@ -13,7 +13,8 @@ type Config struct {
 	Port        Port
 	MySQL       MySQL
 	StoragePath string `env:"STORAGE_PATH,default=./uploads/"`
-	JWT       JWTConfig
+	JWT         JWTConfig
+	ClientURL   ClientURL
 }
 
 type Port struct {
@@ -32,6 +33,10 @@ type MySQL struct {
 type JWTConfig struct {
 	JwtSecretKey  string        `env:"JWT_SECRET_KEY"`
 	TokenDuration time.Duration `env:"JWT_DURATION,default=30m"`
+}
+
+type ClientURL struct {
+	Auth       string `env:"CLIENT_URL_AUTH"`
 }
 
 func NewConfig(env string) (*Config, error) {

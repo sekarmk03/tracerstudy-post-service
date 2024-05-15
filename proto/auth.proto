@@ -1,0 +1,43 @@
+syntax = "proto3";
+
+package tracer_study_grpc;
+option go_package = "./;pb";
+
+import "user.proto";
+import "google/protobuf/empty.proto";
+
+message LoginAlumniRequest {
+    string nim = 1;
+    string tanggal_sidang = 2;
+}
+
+message LoginUserStudyRequest {
+    string email_atasan = 1;
+    string hp_atasan = 2;
+    string nama_atasan = 3;
+}
+
+message LoginResponse {
+    uint32 code = 1;
+    string message = 2;
+    string token = 3;
+}
+
+message LoginUserRequest {
+    string username = 1;
+    string password = 2;
+}
+
+message SingleUserResponse {
+    uint32 code = 1;
+    string message = 2;
+    User data = 3;
+}
+
+service AuthService {
+    rpc LoginAlumni(LoginAlumniRequest) returns (LoginResponse) {};
+    rpc LoginUserStudy(LoginUserStudyRequest) returns (LoginResponse) {};
+    rpc LoginUser(LoginUserRequest) returns (LoginResponse) {};
+    rpc RegisterUser(User) returns (SingleUserResponse) {};
+    rpc GetCurrentUser(google.protobuf.Empty) returns (SingleUserResponse) {};
+}
