@@ -7,9 +7,10 @@ type AccessibleRoles map[string]map[string][]uint32
 	2. Admin
 	3. Manager
 	4. Executive
-	5. Prodi
+	5. Admin Prodi
 	6. Alumni
 	7. Pengguna Alumni
+	8. Admin Post
 */
 
 const (
@@ -20,12 +21,12 @@ const (
 
 var roles = AccessibleRoles{
 	"/" + BasePath + "." + PostSvc + "/": {
-		"CreatePost":  {1, 2},
-		"UpdatePost":  {1, 2},
-		"DeletePost":  {1, 2},
+		"CreatePost":  {1, 2, 8},
+		"UpdatePost":  {1, 2, 8},
+		"DeletePost":  {1, 2, 8},
 	},
 	"/" + BasePath + "." + CommentSvc + "/": {
-		"DeleteComment": {1, 2},
+		"DeleteComment": {1, 2, 8},
 	},
 }
 
