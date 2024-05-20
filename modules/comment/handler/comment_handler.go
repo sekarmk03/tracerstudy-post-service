@@ -129,7 +129,27 @@ func (ch *CommentHandler) CreateComment(ctx context.Context, req *pb.Comment) (*
 }
 
 func (ch *CommentHandler) ReplyComment(ctx context.Context, req *pb.Comment) (*pb.GetCommentResponse, error) {
-	comment, err := ch.commentSvc.Create(ctx, req.GetPostId(), req.GetCommentId(), req.GetName(), req.GetContent(), 1)
+	// get parent comment
+	parentComment, err := ch.commentSvc.FindById(ctx, req.GetCommentId())
+	if err != nil {
+		if parentComment == nil {
+			log.Println("WARNING: [CommentHandler - ReplyComment] Resource parent comment not found for id:", req.GetCommentId())
+			// return nil, status.Errorf(codes.NotFound, "parent comment not found")
+			return &pb.GetCommentResponse{
+				Code:    uint32(http.StatusNotFound),
+				Message: "parent comment not found",
+			}, status.Errorf(codes.NotFound, "parent comment not found")
+		}
+		parseError := errors.ParseError(err)
+		log.Println("ERROR: [CommentHandler - ReplyComment] Internal server error:", parseError.Message)
+		// return nil, status.Errorf(parseError.Code, parseError.Message)
+		return &pb.GetCommentResponse{
+			Code:    uint32(http.StatusInternalServerError),
+			Message: parseError.Message,
+		}, status.Errorf(parseError.Code, parseError.Message)
+	}
+
+	comment, err := ch.commentSvc.Create(ctx, parentComment.PostId, parentComment.Id, req.GetName(), req.GetContent(), parentComment.Level+1)
 	if err != nil {
 		parseError := errors.ParseError(err)
 		log.Println("ERROR: [CommentHandler - ReplyComment] Error while reply comment:", parseError.Message)

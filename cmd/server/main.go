@@ -10,6 +10,7 @@ import (
 	"tracerstudy-post-service/server"
 
 	postModule "tracerstudy-post-service/modules/post"
+	commentModule "tracerstudy-post-service/modules/comment"
 
 	"google.golang.org/grpc"
 	"gorm.io/gorm"
@@ -37,14 +38,15 @@ func main() {
 	grpcServer := server.NewGrpcServer(cfg.Port.GRPC, jwtManager)
 	grpcConn := server.InitGRPCConn(fmt.Sprintf("127.0.0.1:%v", cfg.Port.GRPC), false, "")
 
-	registerGrpcHandlers(grpcServer.Server, *cfg, db, /*jwtManager,*/ grpcConn)
+	registerGrpcHandlers(grpcServer.Server, *cfg, db, grpcConn)
 
 	_ = grpcServer.Run()
 	_ = grpcServer.AwaitTermination()
 }
 
-func registerGrpcHandlers(server *grpc.Server, cfg config.Config, db *gorm.DB, /*jwtManager *commonJwt.JWT,*/ grpcConn *grpc.ClientConn) {
+func registerGrpcHandlers(server *grpc.Server, cfg config.Config, db *gorm.DB, grpcConn *grpc.ClientConn) {
 	postModule.InitGrpc(server, cfg, db, grpcConn)
+	commentModule.InitGrpc(server, cfg, db, grpcConn)
 }
 
 // func createRestServer(port string) *server.Rest {
