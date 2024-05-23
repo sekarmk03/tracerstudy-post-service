@@ -22,7 +22,7 @@ type PostHandler struct {
 	config   config.Config
 	postSvc  service.PostServiceUseCase
 	imageSvc service.ImageServiceUseCase
-	authSvc client.AuthServiceClient
+	authSvc  client.AuthServiceClient
 }
 
 func NewPostHandler(config config.Config, postService service.PostServiceUseCase, imageService service.ImageServiceUseCase, authService client.AuthServiceClient) *PostHandler {
@@ -30,7 +30,7 @@ func NewPostHandler(config config.Config, postService service.PostServiceUseCase
 		config:   config,
 		postSvc:  postService,
 		imageSvc: imageService,
-		authSvc: authService,
+		authSvc:  authService,
 	}
 }
 
