@@ -53,16 +53,3 @@ func ConvertEntityToProto(c *Comment) *pb.Comment {
 		UpdatedAt: timestamppb.New(c.UpdatedAt),
 	}
 }
-
-func ConvertProtoToEntity(c *pb.Comment) *Comment {
-	return &Comment{
-		Id:        c.Id,
-		PostId:    c.PostId,
-		CommentId: c.CommentId,
-		Name:      c.Name,
-		Content:   c.Content,
-		Level:     c.Level,
-		CreatedAt: c.CreatedAt.AsTime(),
-		UpdatedAt: c.UpdatedAt.AsTime(),
-	}
-}

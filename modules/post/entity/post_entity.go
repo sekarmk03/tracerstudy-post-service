@@ -52,22 +52,3 @@ func ConvertEntityToProto(p *Post) *pb.Post {
 		Tags:         p.Tags,
 	}
 }
-
-func ConvertProtoToEntity(p *pb.Post) *Post {
-	return &Post{
-		Id:           p.Id,
-		Title:        p.Title,
-		Slug:         p.Slug,
-		Content:      p.Content,
-		ImagePath:    p.ImagePath,
-		ImageCaption: p.ImageCaption,
-		Type:         p.Type,
-		IsFeatured:   p.IsFeatured,
-		Visitors:     p.Visitors,
-		CreatedBy:    p.CreatedBy,
-		UpdatedBy:    p.UpdatedBy,
-		CreatedAt:    p.CreatedAt.AsTime(),
-		UpdatedAt:    p.UpdatedAt.AsTime(),
-		Tags:         p.Tags,
-	}
-}
