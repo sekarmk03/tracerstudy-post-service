@@ -4,7 +4,6 @@ import (
 	"time"
 	"tracerstudy-post-service/pb"
 
-	"google.golang.org/protobuf/types/known/timestamppb"
 	"gorm.io/gorm"
 )
 
@@ -49,7 +48,7 @@ func ConvertEntityToProto(c *Comment) *pb.Comment {
 		Name:      c.Name,
 		Content:   c.Content,
 		Level:     c.Level,
-		CreatedAt: timestamppb.New(c.CreatedAt),
-		UpdatedAt: timestamppb.New(c.UpdatedAt),
+		CreatedAt: c.CreatedAt.Format(time.RFC3339),
+		UpdatedAt: c.UpdatedAt.Format(time.RFC3339),
 	}
 }

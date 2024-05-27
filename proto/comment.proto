@@ -3,7 +3,6 @@ syntax = "proto3";
 package tracer_study_grpc;
 option go_package = "./;pb";
 
-import "google/protobuf/timestamp.proto";
 import "google/protobuf/empty.proto";
 
 message Comment {
@@ -13,9 +12,9 @@ message Comment {
     string name = 4;
     string content = 5;
     uint32 level = 6;
-    google.protobuf.Timestamp created_at = 7;
-    google.protobuf.Timestamp updated_at = 8;
-    google.protobuf.Timestamp deleted_at = 9;
+    string created_at = 7;
+    string updated_at = 8;
+    string deleted_at = 9;
 }
 
 message GetAllCommentsResponse {

@@ -3,7 +3,6 @@ syntax = "proto3";
 package tracer_study_grpc;
 option go_package = "./;pb";
 
-import "google/protobuf/timestamp.proto";
 import "google/protobuf/empty.proto";
 
 message Post {
@@ -18,9 +17,9 @@ message Post {
     uint64 visitors = 9;
     string created_by = 10;
     string updated_by = 11;
-    google.protobuf.Timestamp created_at = 12;
-    google.protobuf.Timestamp updated_at = 13;
-    google.protobuf.Timestamp deleted_at = 14;
+    string created_at = 12;
+    string updated_at = 13;
+    string deleted_at = 14;
     string tags = 15;
 }
 
