@@ -87,7 +87,7 @@ func (ch *CommentHandler) GetCommentById(ctx context.Context, req *pb.GetComment
 			return &pb.GetCommentResponse{
 				Code:    uint32(http.StatusNotFound),
 				Message: "comment not found",
-			}, status.Errorf(codes.NotFound, "responden not found")
+			}, status.Errorf(codes.NotFound, "comment not found")
 		}
 		parseError := errors.ParseError(err)
 		log.Println("ERROR: [CommentHandler - GetCommentById] Internal server error:", parseError.Message)
