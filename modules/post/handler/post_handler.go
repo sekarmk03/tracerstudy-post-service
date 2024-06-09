@@ -102,7 +102,6 @@ func (ph *PostHandler) CreatePost(ctx context.Context, req *pb.CreatePostRequest
 
 	accessToken, err := utils.GetMetadataAuthorization(ctx)
 	if err != nil {
-		log.Println("ERROR: [PostHandler - CreatePost] Error while getting metadata authorization:", err)
 		parseError := errors.ParseError(err)
 		log.Println("ERROR: [PostHandler - CreatePost] Error while get metadata authorization:", parseError.Message)
 		return &pb.GetPostResponse{
