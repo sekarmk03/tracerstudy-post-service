@@ -9,12 +9,13 @@ import (
 )
 
 type Config struct {
-	ServiceName string `env:"SERVICE_NAME,default=tracer-study-grpc"`
-	Port        Port
-	MySQL       MySQL
-	StoragePath string `env:"STORAGE_PATH,default=./uploads/"`
-	JWT         JWTConfig
-	ClientURL   ClientURL
+	ServiceName       string `env:"SERVICE_NAME,default=tracer-study-grpc"`
+	Port              Port
+	MySQL             MySQL
+	StoragePath       string `env:"STORAGE_PATH,default=./uploads/"`
+	PublicStoragePath string `env:"PUBLIC_STORAGE_PATH,default=/uploads/"`
+	JWT               JWTConfig
+	ClientURL         ClientURL
 }
 
 type Port struct {
@@ -36,7 +37,7 @@ type JWTConfig struct {
 }
 
 type ClientURL struct {
-	Auth       string `env:"CLIENT_URL_AUTH"`
+	Auth string `env:"CLIENT_URL_AUTH"`
 }
 
 func NewConfig(env string) (*Config, error) {

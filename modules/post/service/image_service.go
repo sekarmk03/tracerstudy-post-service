@@ -29,7 +29,7 @@ func (svc *ImageService) UploadImage(ctx context.Context, fileName string, image
 		return "", err
 	}
 
-	return svc.cfg.StoragePath + fileName, nil
+	return svc.cfg.PublicStoragePath + fileName, nil
 }
 
 func (svc *ImageService) DeleteImage(ctx context.Context, image string) error {
