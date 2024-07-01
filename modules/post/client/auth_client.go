@@ -25,7 +25,7 @@ func BuildAuthServiceClient(url string) AuthServiceClient {
 
 func (ac *AuthServiceClient) GetCurrentUser(ctx context.Context, req *emptypb.Empty, token string) (*pb.SingleUserResponse, error) {
 	md := metadata.New(map[string]string{"authorization": token})
-	ctx = metadata.NewOutgoingContext(ctx, md)
+	ctxNew := metadata.NewOutgoingContext(ctx, md)
 
-	return ac.Client.GetCurrentUser(ctx, req)
+	return ac.Client.GetCurrentUser(ctxNew, req)
 }
